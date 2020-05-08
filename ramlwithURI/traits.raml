@@ -1,0 +1,23 @@
+#%RAML 1.0 Trait
+
+responses:
+  400:
+    description: Client Exception
+    body:
+      application/json:
+        examples: {message: "Bad Request"}                
+  401:
+    description: Client Exception
+    body:
+      application/json:
+        examples: {message: "Unauthorized"}  
+  500:
+    description: System Exception
+    body:
+      application/json:
+        examples: {message: "Internal Server Error"}
+headers:
+  client_id:
+    type: string
+    description: client Id provided by API Manager
+    required: true

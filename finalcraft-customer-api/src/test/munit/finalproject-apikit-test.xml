@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd ">
+    <munit:config name="finalproject-apikit-test.xml" />
+    <http:request-config name="HTTP_Request_Configuration" basePath="/api">
+        <http:request-connection host="localhost" port="8081" />
+    </http:request-config>
+    <munit:test name="put:\customers\(ID):application\json:finalproject-config-200-application\json-FlowTest" description="Verifying functionality of [put:\customers\(ID):application\json:finalproject-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="put:\customers\(ID):application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/put_customers_{id}_application_json.json')]" />
+            <set-variable variableName="ID" value="#[1]" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="PUT" path="#['/customers/$(vars.ID)']">
+                <http:headers><![CDATA[#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]]]></http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[output application/json ---payload]" is="#[MunitTools::equalTo(readUrl(MunitTools::getResourceAsString('scaffolder/response/put_200_customers_{id}_application_json.json')))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="put:\customers\(ID):application\json:finalproject-config-400-application\json-FlowTest" description="Verifying functionality of [put:\customers\(ID):application\json:finalproject-config-400-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="put:\customers\(ID):application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/put_customers_{id}_application_json.json')]" />
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="PUT" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="400" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/put_400_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="put:\customers\(ID):application\json:finalproject-config-401-application\json-FlowTest" description="Verifying functionality of [put:\customers\(ID):application\json:finalproject-config-401-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="put:\customers\(ID):application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/put_customers_{id}_application_json.json')]" />
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="PUT" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="401" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(401)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 401" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/put_401_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="put:\customers\(ID):application\json:finalproject-config-500-application\json-FlowTest" description="Verifying functionality of [put:\customers\(ID):application\json:finalproject-config-500-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="put:\customers\(ID):application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/put_customers_{id}_application_json.json')]" />
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="PUT" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="500" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/put_500_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers:finalproject-config-200-application\json-FlowTest" description="Verifying functionality of [get:\customers:finalproject-config-200-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_200_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers:finalproject-config-400-application\json-FlowTest" description="Verifying functionality of [get:\customers:finalproject-config-400-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="400" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_400_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers:finalproject-config-401-application\json-FlowTest" description="Verifying functionality of [get:\customers:finalproject-config-401-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="401" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(401)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 401" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_401_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers:finalproject-config-500-application\json-FlowTest" description="Verifying functionality of [get:\customers:finalproject-config-500-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="500" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_500_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers\(ID):finalproject-config-200-application\json-FlowTest" description="Verifying functionality of [get:\customers\(ID):finalproject-config-200-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_200_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers\(ID):finalproject-config-400-application\json-FlowTest" description="Verifying functionality of [get:\customers\(ID):finalproject-config-400-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="400" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_400_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers\(ID):finalproject-config-401-application\json-FlowTest" description="Verifying functionality of [get:\customers\(ID):finalproject-config-401-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="401" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(401)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 401" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_401_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="get:\customers\(ID):finalproject-config-500-application\json-FlowTest" description="Verifying functionality of [get:\customers\(ID):finalproject-config-500-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="get:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="500" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_500_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="delete:\customers\(ID):finalproject-config-200-application\json-FlowTest" description="Verifying functionality of [delete:\customers\(ID):finalproject-config-200-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="delete:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_200_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="delete:\customers\(ID):finalproject-config-400-application\json-FlowTest" description="Verifying functionality of [delete:\customers\(ID):finalproject-config-400-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="delete:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="400" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_400_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="delete:\customers\(ID):finalproject-config-401-application\json-FlowTest" description="Verifying functionality of [delete:\customers\(ID):finalproject-config-401-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="delete:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="401" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(401)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 401" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_401_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="delete:\customers\(ID):finalproject-config-500-application\json-FlowTest" description="Verifying functionality of [delete:\customers\(ID):finalproject-config-500-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="delete:\customers\(ID):finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-variable variableName="ID" value="#['null']" doc:name="ID" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="#['/customers/$(vars.ID)']">
+                <http:headers>#[{"Accept":"application/json","client_id":""}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="500" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_500_customers_{id}_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\customers:application\json:finalproject-config-200-application\json-FlowTest" description="Verifying functionality of [post:\customers:application\json:finalproject-config-200-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="post:\customers:application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customers_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_200_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\customers:application\json:finalproject-config-400-application\json-FlowTest" description="Verifying functionality of [post:\customers:application\json:finalproject-config-400-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="post:\customers:application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customers_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="400" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 400" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_400_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\customers:application\json:finalproject-config-401-application\json-FlowTest" description="Verifying functionality of [post:\customers:application\json:finalproject-config-401-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="post:\customers:application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customers_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="401" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(401)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 401" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_401_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="post:\customers:application\json:finalproject-config-500-application\json-FlowTest" description="Verifying functionality of [post:\customers:application\json:finalproject-config-500-application\json]" ignore="true">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="finalproject-main" />
+            <munit:enable-flow-source value="post:\customers:application\json:finalproject-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customers_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customers">
+                <http:headers>#[{"Accept":"application/json","client_id":"","Content-Type":"application/json"}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="500" />
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 500" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_500_customers_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+</mule>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <http:listener-config name="finalproject-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="finalproject-config" api="resource::be9d7f07-2776-44ca-a8d0-32af61d1fbe2:finalproject:1.0.2:raml:zip:finalproject.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="b0fbe5d6-2465-4f98-b257-44be17abb12a" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.pwd}" database="${db.name}" />
+	</db:config>
+	<global-property doc:name="Global Property" doc:id="4e909e83-eef7-46c4-bce2-b89664adcd01" name="env" value="dev" />
+	<configuration-properties doc:name="Configuration properties" doc:id="3e8625d4-0a81-42ad-b457-4f0821ac8f7c" file="${env}.properties" />
+	<configuration doc:name="Configuration" doc:id="04bfd5a2-54bd-4281-aaf7-6c4f0c6e92a1" defaultErrorHandler-ref="global-error" />	
+	
+	
+</mule>

@@ -1,0 +1,67 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/f2676afe-589c-46cf-be0e-856888573bfa/ # baseUri:
+title: Final Project
+#%RAML 1.0
+version: v1
+
+types:
+   Customer: !include datatypes/Customer.raml
+
+traits:
+  codes: !include traits.raml
+
+/customers:
+  get:
+    displayName: Get All Customers
+    responses:
+      200:
+        description: Successful Messasage
+        body:
+          application/json:
+            type: Customer[]
+            examples:
+              output: !include Examples/AllCustomers.json
+  is: [codes]          
+  post:
+    body:
+      application/json:
+        type: Customer
+        example: !include Examples/Customer.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: {"message":" Customer created"}      
+  /{ID}:
+    uriParameters:
+      ID:
+        type: integer
+        required: true
+    get:
+      responses:
+        200:
+          description: Success
+          body:
+            application/json:
+              type: Customer
+              example: !include Examples/Customer.json
+    put:     
+      description: updates a specific customer
+      body:
+        application/json:
+          type: Customer
+          example: !include Examples/Customer.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: {"message":" Customer Updated"}            
+    delete:  
+      description: deletes a specific Customer      
+      responses:
+        200:
+          body:
+            application/json:
+              example: {"message":" Customer deleted"}            
+    is: [codes]           
+                 

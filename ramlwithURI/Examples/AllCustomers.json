@@ -1,0 +1,33 @@
+
+[
+ {
+    
+ "customerID": 1,
+  "fName": "Lee",
+  "lName": "string",
+  "phoneNumber": "202-255-265",
+  "SSN": "111-111-4565",
+  "customerAddress": "17526 sabrina terrace denver Str"
+
+ },
+  {
+    
+ "customerID": 2,
+  "fName": "frew",
+  "lName": "Max",
+  "phoneNumber": "565-255-265",
+  "SSN": "256-111-4565",
+  "customerAddress": "17526 sabrina terrace denver Str"
+
+ },
+  {
+    
+ "customerID": 3,
+  "fName": "Daniel",
+  "lName": "west",
+  "phoneNumber": "989-255-265",
+  "SSN": "946-111-4565",
+  "customerAddress": "17526 sabrina terrace denver Str"
+
+ }
+]

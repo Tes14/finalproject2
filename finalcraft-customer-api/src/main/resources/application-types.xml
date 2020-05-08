@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="customers" format="json">
+      <types:shape format="weave" example="examples/ourcustomers-1.json"><![CDATA[%dw 2.0
+
+type customers = Array<{|  fName: String,   lName: String,   customerID: Number {"typeId": "int"},   phoneNumber: String,   customerAddress: String,   SSN: String|}> {"example": "[{\\\"fName\\\":\\\"Mikah\\\",\\\"lName\\\":\\\"Moah\\\",\\\"customerID\\\":3,\\\"phoneNumber\\\":\\\"299-678-7654\\\",\\\"customerAddress\\\":\\\"4567 sabrina terrace denver Str\\\",\\\"SSN\\\":\\\"991-89-4565\\\"},{\\\"fName\\\":\\\"Mark\\\",\\\"lName\\\":\\\"Goal\\\",\\\"customerID\\\":4,\\\"phoneNumber\\\":\\\"299-678-7654\\\",\\\"customerAddress\\\":\\\"4567 sabrina terrace denver Str\\\",\\\"SSN\\\":\\\"991-89-4565\\\"},{\\\"fName\\\":\\\"Tina\\\",\\\"lName\\\":\\\"Doug\\\",\\\"customerID\\\":5,\\\"phoneNumber\\\":\\\"299-665-7654\\\",\\\"customerAddress\\\":\\\"4567 sabrina terrace denver Str\\\",\\\"SSN\\\":\\\"991-89-4565\\\"},{\\\"fName\\\":\\\"Enoch\\\",\\\"lName\\\":\\\"Mark\\\",\\\"customerID\\\":6,\\\"phoneNumber\\\":\\\"299-678-7654\\\",\\\"customerAddress\\\":\\\"4567 sabrina terrace denver Str\\\",\\\"SSN\\\":\\\"991-85-4565\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="one_customer" format="json">
+      <types:shape format="weave" example="examples/craftCustomer-1.json"><![CDATA[%dw 2.0
+
+type one_customer = {|
+  fName: String, 
+  lName: String, 
+  customerID: String, 
+  phoneNumber: String, 
+  customerAddress: String, 
+  SSN: String
+|} {"example": "{\\\"fName\\\":\\\"Lee\\\",\\\"lName\\\":\\\"Max\\\",\\\"customerID\\\":\\\"1\\\",\\\"phoneNumber\\\":\\\"202-111-1111\\\",\\\"customerAddress\\\":\\\"1919 9th St NW Washington, D.C. 20001\\\",\\\"SSN\\\":\\\"11-11-1111\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#5e252c9a-3865-4fa1-9c8a-40951b3ec20c">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="customers"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2ceaaeaa-9b74-4a19-b594-6c6905a2c2af">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="one_customer"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
