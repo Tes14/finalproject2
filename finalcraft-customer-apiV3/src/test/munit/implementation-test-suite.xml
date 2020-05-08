@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-CUST_IDTest" doc:id="66c5285c-31ab-422d-b0b7-dc9ee213dcfe" description="Test" ignore="true">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to CUST_ID" doc:id="2c233afd-d8a2-4eb2-b0a9-edc955318161" name="CUST_ID"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="31350db5-c6ee-40a2-8f66-50fe3b362982" message="Assert that Not Null" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-SSNandPHONEFlowTest" doc:id="59ce6d30-f201-43f6-b794-c256475e0fcb" description="Test" expectedErrorType="ANY" ignore="true">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="21f32349-9c95-4634-a1f2-4e5f56990d9b" />
+			<munit-tools:mock-when doc:name="Mock when" doc:id="005a483b-70d2-4718-ba32-79df2590edae" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="SSNandPHONEFlow" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="8bd34f40-4dcb-4f3f-92c3-d8493ff8ef23" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="SSNandPHONEFlow" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="ddc7bce7-45e4-4924-b408-c70257c62dc4" is="#[MunitTools::notNullValue()]" message="notNullValue Before Call" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="cc9a10a1-b94d-4f2f-a333-3a760f56fb0f" is="#[MunitTools::notNullValue()]" message="notNullValue Afterr Call" expression="#[payload]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to SSNandPHONEFlow" doc:id="34ed2b83-f727-4072-9b41-cda6bd81bc7d" name="SSNandPHONEFlow"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-CreateCustomerTest" doc:id="2f00ce3c-251e-4465-a57f-61c1f6ad4de7" description="Test" expectedErrorType="ANY" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f70d95c2-4996-4a63-b33c-63618236bea3" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="CreateCustomer" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="d7d27508-588f-4358-87e0-9f0833f4e2d2" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="CreateCustomer" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="53384629-3f91-4369-b5ff-d6a846418239" is="#[MunitTools::NullValue()]" message="Assert NullValue Bfr Call  Operation Creatcustomer" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="f5ff939d-d4f1-4fa0-8bb3-93256b3459f6" message="Assert  NOT NullValue After Call  Operation Creatcustomer" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to CreateCustomer" doc:id="f906e342-1361-48eb-8f6d-549dcc2c7193" name="CreateCustomer"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-GetCustomerByIDTest" doc:id="35e4b7ee-333f-4bdc-8595-5ddf8b275b51" description="Test" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b4d86ece-6afd-4046-b268-e2155fb80393" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GetCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="bab8725a-126d-4077-b36f-bb33f1c31447" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GetCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="b0db2ba7-da33-4cf9-9108-ae41fd0c0652" is="#[MunitTools::notNullValue()]" message="Assert NullValue Bfr Call  Operation getcustomerby ID" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="a0b01c1f-17c4-4e21-872e-aeaa4109e3c5" message="Assert Not NullValue After Call  Operation getcustomerby ID" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to GetCustomerByID" doc:id="8ae1b99f-ce03-4aa1-814a-ed171652d304" name="GetCustomerByID"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-GetAllCustomersTest" doc:id="8bbb3a2a-714b-449d-91c6-2772fa93c973" description="Test" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="31184cb7-8e5c-4f8b-9393-fd20bf5bed2f" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="b3554844-d849-4b50-b8b7-2701c439033c" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+					<munit-tools:with-attribute whereValue="GetAllCustomers" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="8315067b-9b4b-4b08-9ed4-98ffb98a5446" is="#[MunitTools::NullValue()]" message="Assert  NullValue Bfr Call  Operation getAllcustomers" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="6a3d1155-6b18-4ff1-8456-197883ed788c" message="Assert Not NullValue After Call  Operation getAllcustomers" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to GetAllCustomers" doc:id="8c76f672-1d65-4c0b-b351-4302ae4aec21" name="GetAllCustomers"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-DeleteCustomerByIDTest" doc:id="72691c13-3103-49b4-8ea5-a89e7f8c81c8" description="Test" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="193ff7fb-00b1-49eb-aa61-2bffa65c0f24" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="DeleteCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="32eb3017-22ed-442e-8a24-e45978156dcd" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="DeleteCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="706d021d-f383-4069-888b-cef6feb376dd" is="#[MunitTools::NullValue()]" message="Assert NullValue Befor Call  Operation DeleteBycustomerID" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="27833d2e-af0f-4080-9384-3c273dbde2dd" is="#[MunitTools::notNullValue()]" message="Assert  notNullValue After Call  Operation DeletecustomerByID" expression="#[payload]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to DeleteCustomerByID" doc:id="dbfba625-d3f4-4f1a-811c-3a15a5dca32b" name="DeleteCustomerByID"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-UpdateCustomerByIDTest" doc:id="6874bb23-6a88-4159-b19b-39619a5aa48f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="fd4d5ab9-fe3d-42c4-a6ff-efdf3b1b7909" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="UpdateCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="27110d0f-4e2b-40fa-8b91-132ae63bbb54" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="UpdateCustomerByID" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="3a870423-6d90-4b9c-97e1-2899f75cede6" is="#[MunitTools::notNullValue()]" message="Assert NOT NullValue Befor Call  Operation UpdateBycustomerByID" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="768f437c-7e93-4669-9c0c-d595c215189d" is="#[MunitTools::notNullValue()]" message="Assert Not NullValue After Call  Operation UpdateBycustomerByID" expression="#[payload]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to UpdateCustomerByID" doc:id="35552883-3979-440e-9331-a0ca4d3bf3ea" name="UpdateCustomerByID"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
