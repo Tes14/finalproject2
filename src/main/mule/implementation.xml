@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="CUST_ID" doc:id="9dac5a96-c360-4b6b-84d5-70a1350b6a83" >
+		<set-variable value="#[message.attributes.uriParam.ID]" doc:name="Set Variable" doc:id="9e195e3c-9a58-4317-a3f3-e3b318129c4a" variableName="cust_ID"/>
+		<logger level="INFO" doc:name="Logger" doc:id="91846510-f5d8-48a5-b1e8-28df9b5654a1" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="edfa9dc3-71d7-44d7-9e9e-802f06db82bb" message="#[payload]"/>
+	</flow>
+	<flow name="SSNandPHONEFlow" doc:id="a3f9e50c-59be-45ea-b2ec-7e48648d02a9" >
+		<try doc:name="Try" doc:id="099dfddb-1495-46d6-9ae7-d294109f05cb" >
+			<validation:matches-regex doc:name="Matches regex SSN" doc:id="e738db92-cc1e-498b-8e95-7b85a6760e84" value="#[payload.SSN]" regex="#[/\d{3}\-\d{2}\-\d{4}/]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ccabdbd1-d27b-4b78-b7c4-5e98d1d13329" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="2fcfadde-d0ab-45d5-aaa7-d0787c9fab94" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Social security is not valid"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="e51da488-f542-4400-91af-f2faa74ae43f" >
+			<validation:matches-regex doc:name="Matches regex Phone" doc:id="31f15b8d-14bb-436e-9a92-41d7a61d19e3" value="#[payload.phoneNumber]" regex="#[/\d{3}\-\d{3}\-\d{4}/]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="307eaf30-a937-497c-be6d-c9af7fc185e4" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="77a55e2e-4021-40a2-8089-8d00e40df44e" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Phone Number is not valid"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</flow>
+	<flow name="CreateCustomer" doc:id="175aeb13-dbb1-418e-8005-6e417ee00da2" >
+		<flow-ref doc:name="Flow Reference" doc:id="8cc32394-dd1d-456a-852e-ce875fc97714" name="SSNandPHONEFlow"/>
+		<try doc:name="Try" doc:id="386aaa05-baf1-4e8a-8f86-cfcbbe71f4ba" >
+			<db:insert doc:name="Insert" doc:id="a1b919fe-8bd8-4ced-8cc6-8581f3665d6a" config-ref="Database_Config">
+			<db:sql>INSERT INTO customers (fName, lName, customerID, phoneNumber, customerAddress, SSN) VALUES (:fN, :lN, :ID, :pN, :cA, :sN);</db:sql>
+			<db:input-parameters><![CDATA[#[{
+	'fN': payload.fName,
+	'lN': payload.lName,
+	'ID': payload.customerID,
+	'pN': payload.phoneNumber,
+	'cA': payload.customerAddress,
+	'sN': payload.SSN
+}]]]></db:input-parameters>
+		</db:insert>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="82a1f086-a075-44a5-b318-3b2cb3cf4f24" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="e548cb91-b72b-4c23-96ab-68e729b39f45" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Server Error: Please Try Later"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="343804c2-2fb1-4031-ba99-66244ecffd71" >
+			<when expression="#[payload.affectedRows &gt; 0]">
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Successfully Created customer"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="2ed2479d-3cc9-4a0f-bdc3-7528157ccccd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Customer Data Not Entered"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="GetCustomerByID" doc:id="2ceaaeaa-9b74-4a19-b594-6c6905a2c2af" >
+		<flow-ref doc:name="Flow Reference" doc:id="08acdf3c-0fce-4298-a15d-6994869df5ff" name="CUST_ID"/>
+		<db:select doc:name="Select" doc:id="ffabde84-f504-454a-8ac0-4a6956d52a9a" config-ref="Database_Config">
+			<db:sql >select * from customers where customerID=:ID;</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'ID': vars.cust_ID
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="50a86672-55e0-44ce-ae74-2e466bce32c3" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="17e114a1-a94a-4434-8cde-d7c2b955c336">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Resource not found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c65f7e14-5234-4be1-8dbe-d96d5779fe87" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="52d330df-b807-4144-9776-27a578a316f8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Server Error: Please Try Latter"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="GetAllCustomers" doc:id="5e252c9a-3865-4fa1-9c8a-40951b3ec20c" >
+		<db:select doc:name="Select" doc:id="037847d5-f4db-446c-93ac-3bc3f0280830" config-ref="Database_Config">
+			<db:sql>SELECT * FROM customers;</db:sql>
+		</db:select>
+		<choice doc:name="Choice" doc:id="51fed416-b964-49ea-be86-63a9de33427b" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="48ab893d-80d8-4d75-ab6d-fdf961d46a8c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Resource not found"
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="87cb3fc2-e507-415a-8f40-9dd2b44dc15b" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="e1d66846-210f-4e26-aa4e-372642c17c1b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Server Error: Please Try Later"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="DeleteCustomerByID" doc:id="18a70463-002f-42d9-92c3-fe7bf466c844" >
+		<flow-ref doc:name="Flow Reference" doc:id="c1ec70f1-8cbc-41f6-a27b-9b43454f8197" name="CUST_ID"/>
+		<db:delete doc:name="Delete" doc:id="4f90471e-a50c-437e-b990-b6a628d69c9a" config-ref="Database_Config">
+			<db:sql>delete from customers where customerID=:ID;</db:sql>
+			<db:input-parameters><![CDATA[#[{
+	'ID': vars.cust_ID
+}]]]></db:input-parameters>
+		</db:delete>
+		<choice doc:name="Choice" doc:id="95d41d10-4076-4e12-92c9-929a9e3d4721" >
+			<when expression="#[payload == 1]">
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Customer deleted successfully"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="763f59d4-1588-4e1d-9679-66641314e253" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Resource Not found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1fc1d582-78bb-4fc7-94f2-643dcce49a83" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="790cc9d2-f33c-4cc4-b389-5b162fced245">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Server Not Found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="UpdateCustomerByID" doc:id="690b05df-b283-43aa-8eaa-1640def35fa8" >
+		<flow-ref doc:name="Flow Reference" doc:id="e5fa5a6c-ea95-4158-85f0-cb9364233f33" name="CUST_ID"/>
+		<flow-ref doc:name="Flow Reference" doc:id="83bf87cd-b1f5-45a3-a10b-772062d97929" name="SSNandPHONEFlow"/>
+		<try doc:name="Try" doc:id="fbd7f4cf-fbda-40fd-8d44-755bdcf573cd" >
+			<db:update doc:name="Update" doc:id="0c4e26ee-4631-4747-af62-70262f5f225c" config-ref="Database_Config">
+			<db:sql>UPDATE customers SET fName=:fN, lName=:lN, phoneNumber=:pN, customerAddress=:cA, SSN=:sN
+WHERE customerID=:ID</db:sql>
+			<db:input-parameters><![CDATA[#[{
+	'fN': payload.fName,
+	'lN': payload.lName,
+	'ID': vars.cust_ID,
+	'pN': payload.phoneNumber,
+	'cA': payload.customerAddress,
+	'sN': payload.SSN
+}]]]></db:input-parameters>
+		</db:update>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4ede4e14-34a9-4440-9a10-f15f6fefa00e" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="0d5781bf-0582-415e-8451-bee49489d41c" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Server Error: Please Try Later"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="f720c8cd-77a5-48b6-8f62-8fdb92833e4b" >
+			<when expression="#[payload.affectedRows == 1]">
+				<ee:transform doc:name="Transform Message" doc:id="fa5f082b-03d6-43b7-806b-4c5b0e6cdb40">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Customer Updated"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Customer not found"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

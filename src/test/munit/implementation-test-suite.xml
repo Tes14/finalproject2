@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-CUST_IDTest" doc:id="6aa9dfe1-f640-4266-9032-c3e6666fb259" description="Test">
+		<munit:behavior>
+			<munit:set-event doc:name="Set Event" doc:id="0bfc1414-5d93-48c7-9516-42ca1aa2dc63" >
+				<munit:attributes value="#[{uriParams:{customerID: 1}}]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to CUST_ID" doc:id="4218ac90-17fa-4ad0-81a1-9e4d5cc3742d" name="CUST_ID"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ca7811be-a888-4b62-8c20-5b059421b92a" expression="#[attributes.uriParams.customerID]" is="#[MunitTools::notNullValue()]" message="an integer entered"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-SSNandPHONEFlowTest" doc:id="a31cc5d3-76c2-4ebe-b519-8475892350f2" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e7658f1a-d69b-45e6-a371-6dde9308412a" >
+				<munit:payload value='#[{
+"SSN": "245-45-5689",
+"phoneNumber": "456-789-7895"
+}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to SSNandPHONEFlow" doc:id="868ee103-cf51-43ad-897c-059c183387c9" name="SSNandPHONEFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="SSN matches Regex" doc:id="e90ddc1d-ca31-408c-92d1-023d3b8eed3e" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+			<munit-tools:assert-that doc:name="Assert that phoneNumber matches Regex" doc:id="dcf65017-ea52-4d38-abd3-502365c39fdd" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-CreateCustomerTest" doc:id="311cb8b7-0ae0-41ba-b402-96789c2a6ac6" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="e391ecf1-6495-4c6b-a017-4f0c9efcea33" >
+				<munit:payload value='#[{
+"customerID":1,
+"fName":"Lee",
+"lName":"string",
+"phoneNumber":"202-255-2657",
+"SSN":"111-11-4565",
+"customerAddress":"17526 sabrina terrace denver Str"
+}]' />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to CreateCustomer" doc:id="c1ce5994-020a-4282-af0e-f52719a98077" name="CreateCustomer"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
